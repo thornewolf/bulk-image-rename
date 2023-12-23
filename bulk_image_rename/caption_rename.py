@@ -38,9 +38,7 @@ a valid FULL response is on the next few examples
         },
         stream=True,
     )
-    print(response)
-    print(response.resolve())
-    print(response.text)
+    response.resolve()
     result = json.loads(response.text)
     filename = result["filename"]
     return filename
