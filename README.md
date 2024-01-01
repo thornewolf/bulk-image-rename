@@ -6,7 +6,7 @@ Bulk Image Rename is a simple, yet powerful command-line utility that allows you
 
 - Download images from URLs.
 - Automatically caption images.
-- Rename images in bulk.
+- Rename images in bulk using these caption.
 - Supports various image formats.
 
 ## Installation
@@ -23,6 +23,16 @@ Before using the tool, install the necessary dependencies with Poetry:
 ```bash
 poetry install
 ```
+
+## Setup
+
+Before using Bulk Image Rename, create a `.env` file in the root directory of this project with the following variable:
+
+```
+GENAI_API_KEY=... # Obtain your key from https://makersuite.google.com/app/apikey
+```
+
+This repo Google's Gemini API for image captioning.
 
 ## Usage
 
