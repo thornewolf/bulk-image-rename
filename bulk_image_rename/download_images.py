@@ -11,6 +11,12 @@ _INPUT_IMAGES_FILE = Path("images.txt")
 
 def download(*, url: str, target_dir: Path):
     print(f"Downloading {url}")
+
+    # Check if the target directory exists, create it if it doesn't
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+        print(f"Created directory {target_dir}")
+
     try:
         # Define the headers with a Chrome user agent
         headers = {

@@ -19,9 +19,11 @@ def download(input_file, output_dir):
 
 @cli.command()
 @click.option("--input-dir", default="downloads", help="Path to the input directory")
-def caption(input_dir):
+@click.option("--output-dir", default="captions", help="Path to the output directory")
+def caption(input_dir, output_dir):
     input_dir = pathlib.Path(input_dir)
-    caption_rename.caption_and_rename(input_files=input_dir)
+    output_dir = pathlib.Path(output_dir)
+    caption_rename.caption_and_rename(input_files=input_dir, outputs_dir=output_dir)
 
 
 @cli.command()
@@ -29,7 +31,7 @@ def caption(input_dir):
 @click.option(
     "--downloads-dir", default="downloads", help="Path to the output directory"
 )
-@click.option("--output-dir", default="downloads", help="Path to the output directory")
+@click.option("--output-dir", default="captions", help="Path to the output directory")
 def download_and_caption(input_file, downloads_dir, output_dir):
     downloads_dir = pathlib.Path(downloads_dir)
     output_dir = pathlib.Path(output_dir)

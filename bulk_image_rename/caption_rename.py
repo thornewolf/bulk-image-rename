@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 import functools
@@ -23,10 +24,10 @@ def generate_filename(img: Image):
         [
             """select a descriptive filename for this .jpg
 output in json format like
-{"filename":"person-dancing.jpg"}
+{"filename":"person-holding-a-medal.jpg"}
 only respond with json. do not provide any additional content.
 a valid FULL response is on the next few examples
-{"filename":"person-dancing-with-an-apple-in-hand.jpg"}
+{"filename":"person-standing-with-an-apple-in-hand.jpg"}
 {"filename":"woman-smiling-wearing-red-dress.jpg"}
 {"filename":"unknown.jpg"}""",
             img,
@@ -46,14 +47,16 @@ a valid FULL response is on the next few examples
 
 
 def save_image_to_output_directory(outputs_dir, img, name):
+    if not os.path.exists(outputs_dir):
+        os.makedirs(outputs_dir)
+        print(f"Created directory {outputs_dir}")
     output_path = outputs_dir / name
     img.save(output_path)
 
 
-@retry(tries=3, delay=2, backoff=2, max_delay=10)
-def process_file_raw(outputs_dir, file_path):
-    first_image_path = _DOWNLOADS_DIR / file_path
-    img = Image.open(first_image_path)
+@retry(tries=3, delay=2, backoff=2, max_delay=10, logger=logging.getLogger(__name__))
+def process_file_raw(outputs_dir: Path, file_path: Path):
+    img = Image.open(file_path)
     name = generate_filename(img).replace(".jpg", "-") + uuid.uuid4().hex[:3] + ".jpg"
     print(f"New name for {file_path} is {name}")
     save_image_to_output_directory(outputs_dir, img, name)
@@ -65,7 +68,8 @@ def get_processor_for_dir(outputs_dir):
 
 def caption_and_rename(*, input_files: Path, outputs_dir: Path):
     processor = get_processor_for_dir(outputs_dir)
-    files = [file.name for file in input_files.iterdir() if file.is_file()]
+    files = [file for file in input_files.iterdir() if file.is_file()]
+    print(files)
     with ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(processor, files)
 

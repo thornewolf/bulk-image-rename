@@ -169,3 +169,5 @@ app/templates/blog/generated/*
 alembic/versions/*
 .prettierrc.json
 output/
+*.png
+*.jpg
