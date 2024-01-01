@@ -3,7 +3,6 @@ import os
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-import functools
 
 
 _DOWNLOADS_DIR = Path("downloads")
@@ -47,6 +46,11 @@ def _load_urls(file_path):
     """Return a list of image URLs from the input file."""
     with open(file_path) as f:
         return [url.strip() for url in f.readlines()]
+
+
+def load_then_download(*, file_path: Path, target_dir: Path):
+    urls = _load_urls(file_path)
+    download_all(urls=urls, target_dir=target_dir)
 
 
 def main():

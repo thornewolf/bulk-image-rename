@@ -168,3 +168,4 @@ node_modules/
 app/templates/blog/generated/*
 alembic/versions/*
 .prettierrc.json
+output/

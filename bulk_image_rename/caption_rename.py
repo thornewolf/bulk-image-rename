@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 from concurrent.futures import ThreadPoolExecutor
+import functools
 from pathlib import Path
 
 import google.generativeai as genai
@@ -44,24 +45,33 @@ a valid FULL response is on the next few examples
     return filename
 
 
-def save_image_to_output_directory(img, name):
-    output_path = _OUTPUTS_DIR / name
+def save_image_to_output_directory(outputs_dir, img, name):
+    output_path = outputs_dir / name
     img.save(output_path)
 
 
 @retry(tries=3, delay=2, backoff=2, max_delay=10)
-def process_file(file_path):
+def process_file_raw(outputs_dir, file_path):
     first_image_path = _DOWNLOADS_DIR / file_path
     img = Image.open(first_image_path)
     name = generate_filename(img).replace(".jpg", "-") + uuid.uuid4().hex[:3] + ".jpg"
     print(f"New name for {file_path} is {name}")
-    save_image_to_output_directory(img, name)
+    save_image_to_output_directory(outputs_dir, img, name)
+
+
+def get_processor_for_dir(outputs_dir):
+    return functools.partial(process_file_raw, outputs_dir)
+
+
+def caption_and_rename(*, input_files: Path, outputs_dir: Path):
+    processor = get_processor_for_dir(outputs_dir)
+    files = [file.name for file in input_files.iterdir() if file.is_file()]
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(processor, files)
 
 
 def main():
-    files = [file.name for file in _DOWNLOADS_DIR.iterdir() if file.is_file()]
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        executor.map(process_file, files)
+    caption_and_rename(input_files=_DOWNLOADS_DIR, outputs_dir=_OUTPUTS_DIR)
 
 
 if __name__ == "__main__":
