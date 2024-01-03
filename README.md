@@ -1,4 +1,4 @@
-# Bulk Image Rename
+# Bulk Image Rename Tool
 
 Bulk Image Rename is a simple, yet powerful command-line utility that allows you to rename and caption multiple images in bulk. This tool is designed to be easy to use and efficient for handling large collections of images. It leverages Google's Gemini LLM to provide accurate and contextually relevant captions for images.
 
